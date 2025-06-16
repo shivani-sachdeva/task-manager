@@ -1,2 +1,14 @@
-# task-manager
-A Task Manager web application built with [Typescript/ React / Node.js] to help users manage daily tasks.
+# 📝 Task Manager App
+
+This is a Task Manager app built using:
+
+- **Frontend**: React + TypeScript
+- **Backend**: Node.js + TypeScript
+- **Testing**: Jest
+
+## 🔧 Setup Instructions
+
+```bash
+cd task-manager
+npm install
+npm run dev
