@@ -4,6 +4,7 @@ const app = express();
 const PORT = 5000;
 
 let tasks = [];
+let currId = 1;
 
 app.use(cors());
 app.use(express.json());
@@ -12,12 +13,30 @@ app.get('/', (req, res) => {
   res.send('API is running!');
 });
 
+// GET all tasks
 app.get('/tasks', (req, res) => {
   res.json(tasks);
 });
 
+// POST new task
 app.post('/tasks', (req, res) => {
-  const newTask = req.body;
-  tasks.push(newTask);
-  res.status(201).json(newTask);
+    const { title } = req.body;
+    if (!title || typeof title !== 'string') {
+        return res.status(400).json({ error: 'Invalid title' });
+    }
+    const newTask = { id: currId++, title, completed: false };
+    tasks.push(newTask);
+    res.status(201).json(newTask);
+});
+
+//DELETE existing task
+app.delete('/api/tasks/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    tasks = tasks.filter(t => t.id !== id);
+    res.status(204).send();
+})
+
+//START server
+app.listen(5000, () => {
+  console.log('Server running at http://localhost:5000');
 });

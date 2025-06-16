@@ -1,14 +1,19 @@
 # 📝 Task Manager App
 
-This is a Task Manager app built using:
+This is a full-stack Task Manager app built using:
 
 - **Frontend**: React + TypeScript
-- **Backend**: Node.js + TypeScript
+- **Backend**: Node.js + Express + TypeScript
 - **Testing**: Jest
 
 ## 🔧 Setup Instructions
 
+### Backend
 ```bash
-cd task-manager
+cd backend
+npm install
+npm run start
+
+cd frontend
 npm install
 npm run dev

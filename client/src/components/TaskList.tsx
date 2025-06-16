@@ -10,22 +10,27 @@ const TaskList = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
   useEffect(() => {
-    fetch('http://localhost:5000/tasks')
+    fetch("http://localhost:5000/tasks")
       .then((res) => res.json())
       .then(setTasks);
   }, []);
 
   const addTask = async () => {
     if (!title.length) return;
-    const res = await fetch('http://localhost:5000/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title })
+    const res = await fetch("http://localhost:5000/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
     });
     const newTask = await res.json();
     setTasks((prev) => [...prev, newTask]);
-    setTitle('');
+    setTitle("");
   };
+
+  const deleteTask = async (id: string) => {
+    await fetch(`http://localhost:5000/tasks/${id}`, { method: 'DELETE' });
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  }
 
   return (
     <div>
@@ -41,7 +46,10 @@ const TaskList = () => {
       </div>
       <ul>
         {tasks.map((t) => (
-          <li>{t.title}</li>
+          <li key={t.id}>
+            <span>{t.title}</span>
+            <button onClick={() => deleteTask(t.id)}>✕</button>
+          </li>
         ))}
       </ul>
     </div>
