@@ -9,11 +9,44 @@ interface Task {
 const TaskList = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editedTitle, setEditedTitle] = useState("");
   useEffect(() => {
     fetch("http://localhost:5000/tasks")
       .then((res) => res.json())
       .then(setTasks);
   }, []);
+
+  const startEdit = (task: Task) => {
+    setEditingId(task.id);
+    setEditedTitle(task.title);
+  };
+
+  const handleSave = async () => {
+    if (editedTitle.trim()) {
+      console.log("saving");
+      const task = tasks.find((t) => t.id == editingId);
+      if (!task) return;
+      const res = await fetch(`http://localhost:5000/tasks/${editingId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: task.completed, title: editedTitle }),
+      });
+      const updated = await res.json();
+      setTasks((prev) => prev.map((t) => (t.id == editingId ? updated : t)));
+      setEditingId('');
+      setEditedTitle('');
+    };
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSave();
+    if (e.key === "Escape") {
+      console.log("ESCAPED");
+      setEditingId('');
+      setEditedTitle('');
+    }
+  };
 
   const addTask = async () => {
     if (!title.length) return;
@@ -28,31 +61,32 @@ const TaskList = () => {
   };
 
   const deleteTask = async (id: string) => {
-    await fetch(`http://localhost:5000/tasks/${id}`, { method: 'DELETE' });
+    await fetch(`http://localhost:5000/tasks/${id}`, { method: "DELETE" });
     setTasks((prev) => prev.filter((t) => t.id !== id));
-  }
+  };
 
   const toggleTask = async (id: string) => {
     const task = tasks.find((t) => t.id === id);
     if (!task) return;
     const res = await fetch(`http://localhost:5000/tasks/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed: !task.completed })
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: !task.completed, title: task.completed }),
     });
     const updated = await res.json();
     setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
-  }
+  };
 
   return (
-    <div>
-      <div>
+    <div className="task-container">
+      <div className="task-input">
         <input
           placeholder="New Task"
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
           }}
+          onKeyDown={(e)=> {if (e.key === "Enter") addTask()}}
         ></input>
         <button onClick={addTask}>Add Task</button>
       </div>
@@ -64,7 +98,22 @@ const TaskList = () => {
               checked={t.completed}
               onChange={() => toggleTask(t.id)}
             />
-            <span>{t.title}</span>
+            {editingId == t.id ? (
+              <input
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                onBlur={handleSave}
+                onKeyDown={handleKeyDown}
+                autoFocus
+              />
+            ) : (
+              <span>{t.title}</span>
+            )}
+            {editingId !== t.id && (
+              <button className="edit-btn" onClick={()=>startEdit(t)}>
+                ✎
+              </button>
+            )}
             <button onClick={() => deleteTask(t.id)}>✕</button>
           </li>
         ))}

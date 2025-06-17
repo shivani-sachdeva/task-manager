@@ -1,4 +1,5 @@
 import TaskList from "./components/TaskList";
+import './App.css';
 
 function App() {
   return (
@@ -8,4 +9,5 @@ function App() {
     </div>
   )
 }
-export default App;
+
+export default App

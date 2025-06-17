@@ -10,10 +10,10 @@ This is a full-stack Task Manager app built using:
 
 ### Backend
 ```bash
-cd backend
+cd server
 npm install
 npm run start
 
-cd frontend
+cd client
 npm install
 npm run dev

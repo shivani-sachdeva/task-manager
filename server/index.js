@@ -41,12 +41,18 @@ app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
 });
 
-// PUT update task
+// PUT update task title or completed status
 app.put('/tasks/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  const { completed } = req.body;
+  const { completed, title } = req.body;
   const task = tasks.find(t => t.id == id);
   if (!task) return res.status(404).json({ error: 'Task not found' });
-  task.completed = !!completed;
+
+  if (typeof completed === 'boolean') {
+    task.completed = completed;
+  }
+  if (typeof title === 'string' && title.length > 0) {
+    task.title = title.trim();
+  }
   res.json(task);
 });
