@@ -32,6 +32,18 @@ const TaskList = () => {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   }
 
+  const toggleTask = async (id: string) => {
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ completed: !task.completed })
+    });
+    const updated = await res.json();
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+  }
+
   return (
     <div>
       <div>
@@ -47,6 +59,11 @@ const TaskList = () => {
       <ul>
         {tasks.map((t) => (
           <li key={t.id}>
+            <input
+              type="checkbox"
+              checked={t.completed}
+              onChange={() => toggleTask(t.id)}
+            />
             <span>{t.title}</span>
             <button onClick={() => deleteTask(t.id)}>✕</button>
           </li>

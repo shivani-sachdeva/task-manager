@@ -30,13 +30,23 @@ app.post('/tasks', (req, res) => {
 });
 
 //DELETE existing task
-app.delete('/api/tasks/:id', (req, res) => {
+app.delete('/tasks/:id', (req, res) => {
     const id = parseInt(req.params.id);
     tasks = tasks.filter(t => t.id !== id);
     res.status(204).send();
-})
+});
 
 //START server
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
+});
+
+// PUT update task
+app.put('/tasks/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { completed } = req.body;
+  const task = tasks.find(t => t.id == id);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
+  task.completed = !!completed;
+  res.json(task);
 });
