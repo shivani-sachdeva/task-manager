@@ -24,7 +24,6 @@ const TaskList = () => {
 
   const handleSave = async () => {
     if (editedTitle.trim()) {
-      console.log("saving");
       const task = tasks.find((t) => t.id == editingId);
       if (!task) return;
       const res = await fetch(`http://localhost:5000/tasks/${editingId}`, {
@@ -36,7 +35,13 @@ const TaskList = () => {
       setTasks((prev) => prev.map((t) => (t.id == editingId ? updated : t)));
       setEditingId('');
       setEditedTitle('');
-    };
+    }
+    else {
+      alert("Task title cannot be empty.");
+      setEditingId('');
+      setEditedTitle('');
+      return;
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -49,7 +54,11 @@ const TaskList = () => {
   };
 
   const addTask = async () => {
-    if (!title.length) return;
+    if (!title.trim()) {
+      alert("Task title cannot be empty.");
+      setTitle('');
+      return;
+    }
     const res = await fetch("http://localhost:5000/tasks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -100,6 +109,7 @@ const TaskList = () => {
             />
             {editingId == t.id ? (
               <input
+                className="edit-task"
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.target.value)}
                 onBlur={handleSave}

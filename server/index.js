@@ -21,7 +21,7 @@ app.get('/tasks', (req, res) => {
 // POST new task
 app.post('/tasks', (req, res) => {
     const { title } = req.body;
-    if (!title || typeof title !== 'string') {
+    if (!title.trim() || typeof title !== 'string') {
         return res.status(400).json({ error: 'Invalid title' });
     }
     const newTask = { id: currId++, title, completed: false };
