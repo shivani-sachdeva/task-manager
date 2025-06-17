@@ -56,3 +56,5 @@ app.put('/tasks/:id', (req, res) => {
   }
   res.json(task);
 });
+
+module.exports = app;
